@@ -54,7 +54,9 @@ get(usersController.getAllUser).
 post(usersController.saveUser)
 
 
-router.route('/:id').get(usersController.getLimitUser)
+router.route('/:limit').get(usersController.getLimitUser)
+router.route('/update/:id').patch(usersController.updateUser)
+router.route('/delete/:id').delete(usersController.deleteUser)
 
 
 module.exports = router

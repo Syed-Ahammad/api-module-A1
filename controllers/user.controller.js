@@ -1,8 +1,7 @@
 const fs = require('fs');
 const usersData = require('./readAndWriteData');
-const allUsers = usersData.getAllUser();
-// const users = JSON.stringify(allUsers)
 module.exports.getRandomUser = (req, res, next)=>{
+    const allUsers = usersData.getAllUser()
 
     const randomNumber = Math.round(Math.random() * allUsers.length);
     // console.log(randomNumber)
@@ -12,35 +11,61 @@ module.exports.getRandomUser = (req, res, next)=>{
 };
 
 module.exports.getAllUser = (req, res, next)=>{
+    const allUsers = usersData.getAllUser()
     res.send(allUsers);
     res.end()
 };
 module.exports.getLimitUser = (req, res, next)=>{
-    const limit = req.params.id;
+    const allUsers = usersData.getAllUser()
+    const limit = req.params.limit;
     allUsers.length = limit
-    usersData.getAllUser()
     // console.log(limit)
     res.send(allUsers)
 };
 module.exports.saveUser = (req, res, next)=>{
-    const user = JSON.stringify(req.body);
-    console.log(user)
-
-   fs.writeFileSync('users.json', user);
-    // fs.readFile('users.json', (err, data)=>{
-    //     let users = JSON.parse(data);
-    //     users = [...users, user ];
-    //     fs.writeFile('users.json',JSON.stringify(users), (err)=>{
-    //         if(err){
-    //             res.send('user save to failed');
-    //             res.end()
-    //         }
-    //         else{
-    //             res.send('user saved successfully');
-    //             res.end()
-    //         }
-    //     })
-    // })
-    res.send(user)
+    const oldUsers = usersData.getAllUser()
+    req.body._id = oldUsers.length + 1;
+    const newUsers = [...oldUsers, req.body];
+    const saved = usersData.addUser(newUsers);
+    console.log(saved)
+    res.send(saved)
     res.end()
+};
+module.exports.updateUser = (req, res, next)=>{
+    const allUsers = usersData.getAllUser();
+    const userData = req.body;
+    const {name, address, gender, contact, photoUrl} = userData;
+    const id = req.params.id;
+    //find existing user by id
+    const existUser = allUsers.find(user=> user._id == id);
+    // console.log(existUser)
+    if(!existUser){
+        return res.status(404).send({err: true, mag: "user not found"})
+    }
+    else if(name == null || address == null|| gender == null || contact == null || photoUrl == null){
+        // console.log(userData);
+        res.status(406).send({err: true, mag: "Not acceptable give all information"})
+    }else{
+        userData._id = parseInt(id);
+        const restUsers = allUsers.filter(user=> user._id != id);
+        const updateUser = usersData.addUser([...restUsers, userData])
+        console.log(updateUser)
+        res.status(200).send({mas: "Data update successfully"})
+    }
+    res.end()
+};
+module.exports.deleteUser = (req, res, next)=>{
+    const id = req.params.id;
+    const allUsers = usersData.getAllUser();
+    const deleteUser = allUsers.find(user=> user._id == id);
+
+    if(!deleteUser){
+        console.log("user not found")
+    }
+    else{
+        const restUsers = allUsers.filter(user => user._id != id)
+        const deleteSuccess = usersData.addUser(restUsers)
+        console.log(deleteSuccess)
+    }
+res.end()
 };
