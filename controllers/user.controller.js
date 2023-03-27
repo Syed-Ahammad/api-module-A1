@@ -54,6 +54,25 @@ module.exports.updateUser = (req, res, next)=>{
     }
     res.end()
 };
+module.exports.updateMultiUsers = (req, res, next)=>{
+    const users = req.body;
+    const allUsers = usersData.getAllUser();
+    console.log(users);
+
+    if( !users){
+        res.status(409).send({mas: "Your information incorrect"})
+    }
+    else{
+        for (let i = 0; i < users.length; i++) {
+            const user = users[i];
+            console.log(user)
+            
+        }
+    }
+    // console.log(users)
+   
+    res.end()
+};
 module.exports.deleteUser = (req, res, next)=>{
     const id = req.params.id;
     const allUsers = usersData.getAllUser();

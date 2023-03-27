@@ -56,6 +56,7 @@ post(usersController.saveUser)
 
 router.route('/:limit').get(usersController.getLimitUser)
 router.route('/update/:id').patch(usersController.updateUser)
+router.route('/updateMultiUsers').patch(usersController.updateMultiUsers)
 router.route('/delete/:id').delete(usersController.deleteUser)
 
 
